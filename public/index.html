@@ -71,6 +71,8 @@
         }
         
         .roblox-header { font-weight: 700; font-size: 32px; text-align: center; margin-bottom: 24px; color: #ffffff; margin-top: 10px; }
+        
+        /* Ajuste do filtro para garantir que a logo fique branca */
         .img-white-filter { filter: brightness(0) invert(1); }
         
         .roblox-input { 
@@ -164,7 +166,7 @@
             <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
             
             <div class="roblox-wordmark-wrapper">
-                <img src="https://images.rbxcdn.com/cece570e37aa8f95a450ab2b32a93d5e.svg" alt="Roblox" class="img-white-filter">
+                <img src="https://logos-world.net/wp-content/uploads/2020/11/Roblox-Logo.png" alt="Roblox" class="img-white-filter">
             </div>
             
             <h2 class="text-center font-bold text-xl mb-6" id="login-heading">Login</h2>
@@ -338,7 +340,6 @@
             });
         }
 
-        // ADMIN FUNCTIONS
         function openAdminModal() {
             editingId = null;
             document.getElementById('btn-del').classList.add('hidden');
@@ -358,7 +359,6 @@
             document.getElementById('modal-admin').style.display = 'flex';
         }
 
-        // SALVAR NO MONGO DB
         async function saveItem() {
             const type = document.getElementById('adm-type').value;
             const name = document.getElementById('adm-name').value;
@@ -372,7 +372,6 @@
                 parent: currentParent
             };
 
-            // Envia para o Backend
             await fetch('/api/items', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -380,19 +379,14 @@
             });
 
             closeModals();
-            loadItems(); // Recarrega do servidor
+            loadItems();
         }
 
-        // DELETAR NO MONGO DB
         async function deleteItem() {
             if(!confirm("Excluir?")) return;
-            
-            await fetch('/api/items/' + editingId, {
-                method: 'DELETE'
-            });
-
+            await fetch('/api/items/' + editingId, { method: 'DELETE' });
             closeModals();
-            loadItems(); // Recarrega do servidor
+            loadItems();
         }
 
         function togglePassword() {
