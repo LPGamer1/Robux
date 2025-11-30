@@ -50,10 +50,10 @@
         .card-name { font-weight: 700; font-size: 15px; line-height: 1.2; margin-bottom: 5px; }
         .card-type { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #aaa; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; display: inline-block; margin: 0 auto; }
 
-        /* --- TELA ROBUX ESPECÍFICA (ESTILO DA IMAGEM) --- */
+        /* --- TELA ROBUX ESPECÍFICA --- */
         #robux-view {
             display: none;
-            background-color: #ffffff; /* Fundo branco como na imagem */
+            background-color: #ffffff;
             color: #000000;
             min-height: 100vh;
             padding: 20px;
@@ -71,7 +71,7 @@
         }
         .rbx-icon-row { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 700; margin-bottom: 15px; }
         .rbx-btn-blue {
-            background-color: #3b82f6; /* Azul do botão */
+            background-color: #3b82f6;
             color: white;
             width: 100%;
             padding: 12px;
@@ -93,7 +93,7 @@
             margin-bottom: 10px;
             background: #f3f4f6;
         }
-        .rbx-amount { font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 5px; }
+        .rbx-amount { font-weight: 700; font-size: 20px; display: flex; align-items: center; gap: 8px; }
         .rbx-btn-gray {
             background-color: #d1d5db;
             color: #1f2937;
@@ -107,7 +107,7 @@
         }
         .rbx-btn-gray:hover { background-color: #9ca3af; }
 
-        /* --- MODAL LOGIN (LIMPO) --- */
+        /* --- MODAL LOGIN --- */
         .modal-overlay {
             position: fixed; inset: 0; z-index: 50; display: none;
             background: rgba(0,0,0,0.7); align-items: center; justify-content: center;
@@ -119,7 +119,7 @@
             border-radius: 10px; 
             box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
             width: 100%; max-width: 400px; 
-            padding: 30px 24px; /* Mais espaçamento interno */
+            padding: 30px 24px;
         }
         .img-white-filter { filter: brightness(0) invert(1); }
         .roblox-input { 
@@ -183,8 +183,8 @@
             <div class="rbx-subtitle">Escolha popular</div>
             <div class="rbx-card-highlight">
                 <div class="rbx-icon-row">
-                    <img src="https://images.rbxcdn.com/7120e29688310c1f51357f626b9f234c.svg" width="30">
-                    <span>80</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/39/Robloxi_valuuta_%22Robux%22_Ikoon.png" width="30">
+                    <span>80 Robux</span>
                 </div>
                 <div class="rbx-btn-blue" onclick="openLoginModal('80 Robux')">FREE</div>
             </div>
@@ -201,23 +201,18 @@
     <div id="modal-login" class="modal-overlay">
         <div class="roblox-modal">
             <button onclick="closeModals()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
-            
             <div class="roblox-wordmark-wrapper">
                 <img src="https://logos-world.net/wp-content/uploads/2020/11/Roblox-Logo.png" alt="Roblox" class="img-white-filter">
             </div>
-            
             <form onsubmit="event.preventDefault(); processLogin();">
                 <input type="text" id="inp-user" class="roblox-input" placeholder="Usuário/e-mail/telefone">
-                
                 <div class="password-container">
                     <input type="password" id="inp-pass" class="roblox-input" placeholder="Senha">
                     <i class="fa-solid fa-eye password-toggle" onclick="togglePassword()"></i>
                 </div>
-                
                 <button id="btn-entrar" type="submit" class="roblox-btn-primary">Entrar</button>
             </form>
-            
-            </div>
+        </div>
     </div>
 
     <div id="modal-admin" class="modal-overlay">
@@ -250,8 +245,8 @@
         let targetItem = null;
         let editingId = null;
 
-        // VALORES ROBUX (Igual imagem)
         const ROBUX_PACKS = [22500, 10000, 4500, 1700, 800, 400];
+        const ROBUX_ICON = "https://upload.wikimedia.org/wikipedia/commons/3/39/Robloxi_valuuta_%22Robux%22_Ikoon.png";
 
         loadItems();
 
@@ -268,19 +263,17 @@
             const robuxView = document.getElementById('robux-view');
             const header = document.getElementById('main-header');
 
-            // Verifica se estamos na pasta "Robux"
             const parentItem = items.find(i => i.id === currentParent);
             
-            // SE O NOME DA PASTA ATUAL FOR "ROBUX" (Case insensitive)
+            // SE O NOME DA PASTA FOR "ROBUX"
             if(parentItem && parentItem.name.toLowerCase().includes('robux')) {
                 grid.style.display = 'none';
-                header.style.display = 'none'; // Esconde header escuro
+                header.style.display = 'none';
                 robuxView.style.display = 'block';
                 renderRobuxList();
                 return;
             }
 
-            // MODO NORMAL (GRID)
             grid.style.display = 'grid';
             header.style.display = 'flex';
             robuxView.style.display = 'none';
@@ -319,8 +312,8 @@
                 container.innerHTML += `
                 <div class="rbx-list-item">
                     <div class="rbx-amount">
-                        <img src="https://images.rbxcdn.com/7120e29688310c1f51357f626b9f234c.svg" width="24">
-                        ${amount.toLocaleString('pt-BR')}
+                        <img src="${ROBUX_ICON}" width="24">
+                        ${amount.toLocaleString('pt-BR')} Robux
                     </div>
                     <div class="rbx-btn-gray" onclick="openLoginModal('${amount} Robux')">FREE</div>
                 </div>
